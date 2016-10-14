@@ -1,5 +1,7 @@
 package gui;
 
+import game.GameState;
+
 import javax.swing.*;
 
 /**
