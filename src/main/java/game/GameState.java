@@ -1,5 +1,8 @@
 package game;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by sabeehabanubhai on 2016/10/14.
  */
@@ -79,13 +82,23 @@ public class GameState {
 
     public void doMove(Point point) {
         //if fox:
-        //is cell rabbit && adjacent (not diagonal): then move is legal
-        //change colour to fox, and previous cell to empty
-        //f rabbit
-        //is cell empty && adjacent (not diagonal): then move is legal
-        //change empty to rabbit, and previous cell to empty
+        if (activePlayer.equals(foxPlayer) && isFoxLegalMove(point)){
+            theBoard.setCell(point, activePlayer.getColour());
+            // set previous to empty
+            theBoard.setCell(selectedPoint, Cell.EMPTY);
+            switchPlayers();
+        }
 
-        //switchPlayers();
+        if (activePlayer.equals(rabbitPlayer) && isRabbitLegalMove(point)) {
+            theBoard.setCell(point, activePlayer.getColour());
+            // set previous to empty
+            theBoard.setCell(selectedPoint, Cell.EMPTY);
+            switchPlayers();
+        }
+
+        selectedPoint = null;
+
+
     }
 
     public void doMove(int row, int column) {
@@ -105,13 +118,24 @@ public class GameState {
     }
 
     public boolean isValidSelection(Point point) {
+        //different rules
         return !hasActiveSelection() && theBoard.getCell(point).equals(activePlayer.getColour());
     }
 
-    public boolean isLegalMove(Point point) {
-        // foxplayer = is cell top,bottom,left,right == rabbit
-        // rabbitplayer = is cell t,b,l,r == empty
-        return hasActiveSelection();
+    public boolean isFoxLegalMove(Point point) {
+
+        return hasActiveSelection() &&
+                (Point.getColumnDistance(selectedPoint, point) == 1 || Point.getRowDistance(selectedPoint, point) == 1)
+                && (selectedPoint.getColumn() == point.getColumn()|| selectedPoint.getRow() == point.getRow())
+                && theBoard.getCell(point).equals(Cell.RABBIT);
+    }
+
+    public boolean isRabbitLegalMove(Point point) {
+
+        return hasActiveSelection() &&
+                (Point.getColumnDistance(selectedPoint, point) == 1 || Point.getRowDistance(selectedPoint, point) == 1)
+                && (selectedPoint.getColumn() == point.getColumn()|| selectedPoint.getRow() == point.getRow())
+                && theBoard.getCell(point).equals(Cell.EMPTY);
     }
 
     public boolean gameIsOver() {
@@ -119,38 +143,71 @@ public class GameState {
         //if fox cells all equal same row: rabbit wins
         //if fox cells have no more legal moves: fox wins
 
-        return !foxCellsInSameColumn() || !foxCellsInSameRow() || !boardHasEmptySpace();
+        return !foxCellsInSameColumn() || !foxCellsInSameRow() || getFoxLegalMoves().size() == 0;
     }
 
+
     public boolean foxCellsInSameColumn() {
-        for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
-            for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
-                //if fox cells all equal same column
-                return true;
-            }
-        }
-        return false;
+
+        List<Point> foxLocations = getFoxLocations();
+
+        boolean sameColumn = foxLocations.get(0).getColumn() == foxLocations.get(1).getColumn();
+        boolean sameColumn2 = foxLocations.get(1).getColumn() == foxLocations.get(2).getColumn();
+        return sameColumn && sameColumn2;
     }
 
     public boolean foxCellsInSameRow() {
-        for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
-            for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
-                //if fox cells all equal same row
-                return true;
-            }
-        }
-        return false;
+
+        List<Point> foxLocations = getFoxLocations();
+
+        boolean sameRow = foxLocations.get(0).getRow() == foxLocations.get(1).getRow();
+        boolean sameRow2 = foxLocations.get(1).getRow() == foxLocations.get(2).getRow();
+        return sameRow && sameRow2;
     }
 
-    public boolean boardHasEmptySpace() {
+
+    // helper for get fox locations
+    public List<Point> getFoxLocations() {
+
+        List<Point> foxLocations = new LinkedList<Point>();
+
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
-               if (theBoard.getCell(r,c).equals(Cell.EMPTY)) {
-                   return true;
-               }
+                //if fox cells all equal same column
+                if (theBoard.getCell(r,c).equals(Cell.FOX)) {
+                    foxLocations.add(new Point(r,c));
+                }
+
             }
         }
-        return false;
+        return foxLocations;
+    }
+
+
+    public List<Point> getFoxLegalMoves() {
+
+        List<Point> foxLocations = getFoxLocations();
+
+        List<Point> foxLegalMoves = new LinkedList<Point>();
+
+        for (Point location : foxLocations) {
+            int r = location.getRow();
+            int c = location.getColumn();
+
+            if (theBoard.getCell(r,c -1).equals(Cell.RABBIT)){
+                foxLegalMoves.add(new Point(r,c -1));
+            }
+            if (theBoard.getCell(r,c +1).equals(Cell.RABBIT)){
+                foxLegalMoves.add(new Point(r,c +1));
+            }
+            if (theBoard.getCell(r -1,c).equals(Cell.RABBIT)){
+                foxLegalMoves.add(new Point(r -1,c));
+            }
+            if (theBoard.getCell(r +1,c).equals(Cell.RABBIT)){
+                foxLegalMoves.add(new Point(r +1,c));
+            }
+        }
+        return foxLegalMoves;
     }
 
     public BoardState getTheBoard() {

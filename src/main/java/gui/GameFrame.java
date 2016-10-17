@@ -1,8 +1,7 @@
 package gui;
 
-import game.BoardState;
-import game.GameState;
-import game.GameStyle;
+import game.*;
+import game.Point;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,8 +67,13 @@ public class GameFrame extends JFrame {
                     public void mouseExited(MouseEvent e) {}
                     public void mouseReleased(MouseEvent e) {
                         BoardCellPanel clickedCell = (BoardCellPanel) e.getSource();
-                        gamestate.doSelect(clickedCell.getRow(), clickedCell.getColumn());
-                        gamestate.doMove(clickedCell.getRow(), clickedCell.getColumn());
+
+                        if (gamestate.getSelectedPoint() == null) {
+                            gamestate.doSelect(clickedCell.getRow(), clickedCell.getColumn());
+                        } else {
+                            gamestate.doMove(clickedCell.getRow(), clickedCell.getColumn());
+                        }
+
                         refreshBoard();
                     }
                 });
@@ -104,7 +108,23 @@ public class GameFrame extends JFrame {
             }
         }
 
+        // if a cell is selected, show all possible moves
+        if (gamestate.getSelectedPoint() != null) {
+            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.BLUE);
+        }
+
+
+
         // Update message label
+        if (gamestate.getActivePlayer().getColour().equals(Cell.FOX)) {
+            messageLabel.setForeground(Color.ORANGE);
+            messageLabel.setText("Fox player's turn.");
+        } else {
+            messageLabel.setForeground(Color.PINK);
+            messageLabel.setText("Rabbit player's turn.");
+        }
+
+        this.repaint();
 
     }
 

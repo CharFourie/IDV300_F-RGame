@@ -28,4 +28,23 @@ public class Player {
     public void setColour(Cell colour) {
         this.colour = colour;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (colour != player.colour) return false;
+        return character == player.character;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = colour != null ? colour.hashCode() : 0;
+        result = 31 * result + (character != null ? character.hashCode() : 0);
+        return result;
+    }
 }

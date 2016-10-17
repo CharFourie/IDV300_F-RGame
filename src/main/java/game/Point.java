@@ -43,6 +43,7 @@ public class Point {
         return Math.abs(point1.getColumn() - point2.getColumn());
     }
 
+
     //What does this do?
     @Override
     public boolean equals(Object o) {
