@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static game.Cell.FOX;
+import static game.Cell.RABBIT;
 
 /**
  * Created by charnefourie on 2016/10/13.
@@ -58,7 +59,7 @@ public class GameFrame extends JFrame {
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++){
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++){
                 BoardCellPanel cellPanel = new BoardCellPanel(r,c);
-                cellPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                cellPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
                 // When board is clicked
                 cellPanel.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {}
@@ -81,6 +82,7 @@ public class GameFrame extends JFrame {
                 boardPanel.add(cellPanel);
             }
         }
+        boardPanel.setBackground(Color.GREEN);
 
         // Message Label
         messageLabel = new JLabel();
@@ -103,29 +105,43 @@ public class GameFrame extends JFrame {
                 switch (gamestate.getTheBoard().getCell(r,c)) {
                     case FOX : boardCellPanels.get(new Point(r, c)).setBackground(Color.ORANGE); break;
                     case RABBIT :  boardCellPanels.get(new Point(r,c)).setBackground(Color.PINK); break;
-                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(Color.WHITE); break;
+                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(0,0,0,64)); break;
                 }
             }
         }
 
-        // if a cell is selected, show all possible moves
-        if (gamestate.getSelectedPoint() != null) {
-            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.BLUE);
+        // show if selected
+        if (gamestate.getSelectedPoint() != null && gamestate.getActivePlayer().getColour().equals(FOX)) {
+            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.YELLOW);
+        } else if (gamestate.getSelectedPoint() != null && gamestate.getActivePlayer().getColour().equals(RABBIT)){
+            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.RED);
         }
-
-
 
         // Update message label
-        if (gamestate.getActivePlayer().getColour().equals(Cell.FOX)) {
-            messageLabel.setForeground(Color.ORANGE);
-            messageLabel.setText("Fox player's turn.");
+        if (gamestate.gameIsOver()){
+            if (gamestate.foxCellsInSameColumn()){
+                messageLabel.setForeground(Color.PINK);
+                messageLabel.setText("GAME OVER! RABBIT WINS!");
+            } else if (gamestate.foxCellsInSameRow()){
+                messageLabel.setForeground(Color.PINK);
+                messageLabel.setText("GAME OVER! RABBIT WINS!");
+            } else if (gamestate.getFoxLegalMoves().size() == 0){
+                messageLabel.setForeground(Color.ORANGE);
+                messageLabel.setText("GAME OVER! FOX WINS!");
+            } else {
+                messageLabel.setForeground(Color.BLACK);
+                messageLabel.setText("GAME OVER! IT IS A DRAW.");
+            }
         } else {
-            messageLabel.setForeground(Color.PINK);
-            messageLabel.setText("Rabbit player's turn.");
+            if (gamestate.getActivePlayer().getColour().equals(Cell.FOX)) {
+                messageLabel.setForeground(Color.ORANGE);
+                messageLabel.setText("FOX'S TURN.");
+            } else {
+                messageLabel.setForeground(Color.PINK);
+                messageLabel.setText("RABBIT'S TURN.");
+            }
         }
-
         this.repaint();
-
     }
 
     public  void setGameState(GameState gameState){
