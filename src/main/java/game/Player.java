@@ -21,6 +21,16 @@ public class Player {
         this.character = character;
     }
 
+    public String getImageFileName(){
+        if (getColour() == Cell.FOX){
+            return "images/FoxIcon.png";
+        } else if (getColour() == Cell.RABBIT){
+            return "images/RabbitIcon.png";
+        } else {
+            return null;
+        }
+    }
+
     public Cell getColour() {
         return colour;
     }
