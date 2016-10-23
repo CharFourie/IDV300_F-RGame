@@ -143,7 +143,7 @@ public class GameState {
         //if fox cells all equal same row: rabbit wins
         //if fox cells have no more legal moves: fox wins
 
-        return !foxCellsInSameColumn() || !foxCellsInSameRow() || getFoxLegalMoves().size() == 0;
+        return foxCellsInSameColumn() || foxCellsInSameRow() || foxHasNoLegalMoves() ;
     }
 
 
@@ -153,7 +153,11 @@ public class GameState {
 
         boolean sameColumn = foxLocations.get(0).getColumn() == foxLocations.get(1).getColumn();
         boolean sameColumn2 = foxLocations.get(1).getColumn() == foxLocations.get(2).getColumn();
-        return sameColumn && sameColumn2;
+
+        if (sameColumn && sameColumn2) {
+            return true;
+        }
+        return false;
     }
 
     public boolean foxCellsInSameRow() {
@@ -162,7 +166,11 @@ public class GameState {
 
         boolean sameRow = foxLocations.get(0).getRow() == foxLocations.get(1).getRow();
         boolean sameRow2 = foxLocations.get(1).getRow() == foxLocations.get(2).getRow();
-        return sameRow && sameRow2;
+
+        if (sameRow && sameRow2 ){
+            return true;
+        }
+        return false;
     }
 
 
@@ -208,6 +216,13 @@ public class GameState {
             }
         }
         return foxLegalMoves;
+    }
+
+    public boolean foxHasNoLegalMoves() {
+        if (getFoxLegalMoves().size() == 0) {
+            return true;
+        }
+        return false;
     }
 
     public BoardState getTheBoard() {

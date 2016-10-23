@@ -125,10 +125,12 @@ public class GameFrame extends JFrame {
             } else if (gamestate.foxCellsInSameRow()){
                 messageLabel.setForeground(Color.PINK);
                 messageLabel.setText("GAME OVER! RABBIT WINS!");
-            } else if (gamestate.getFoxLegalMoves().size() == 0){
+            }
+            else if (gamestate.foxHasNoLegalMoves()){
                 messageLabel.setForeground(Color.ORANGE);
                 messageLabel.setText("GAME OVER! FOX WINS!");
-            } else {
+            }
+            else {
                 messageLabel.setForeground(Color.BLACK);
                 messageLabel.setText("GAME OVER! IT IS A DRAW.");
             }
@@ -141,6 +143,7 @@ public class GameFrame extends JFrame {
                 messageLabel.setText("RABBIT'S TURN.");
             }
         }
+
         this.repaint();
     }
 
