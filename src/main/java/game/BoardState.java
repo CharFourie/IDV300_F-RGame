@@ -47,6 +47,18 @@ public class BoardState {
         setCell(new Point(row, column), cell);
     }
 
+    public int countCells(Cell colour) {
+        int count = 0;
+        for (int r = MIN; r <= MAX; r++) {
+            for (int c = MIN; c <= MAX; c++) {
+                if (getCell(r,c).equals(colour)){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

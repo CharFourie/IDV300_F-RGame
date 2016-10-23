@@ -52,6 +52,15 @@ public class GameFrame extends JFrame {
         });
 
         JMenuItem aiItem = new JMenuItem("New AI Game");
+        aiItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // localplayer gets to start
+                AIGameState aiGameState = new AIGameState(GameStyle.AI, Cell.FOX);
+                aiGameState.setGameFrame(GameFrame.this);
+                gamestate = aiGameState;
+                refreshBoard();
+            }
+        });
 
         menu.add(twoPlayerItem);
         menu.add(networkedItem);
