@@ -44,6 +44,13 @@ public class GameFrame extends JFrame {
         });
 
         JMenuItem networkedItem = new JMenuItem("New Networked Game");
+        networkedItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                GameFrame.this.dispose();
+                new NetworkedSetupFrame();
+            }
+        });
+
         JMenuItem aiItem = new JMenuItem("New AI Game");
 
         menu.add(twoPlayerItem);
