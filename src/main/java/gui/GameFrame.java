@@ -77,14 +77,6 @@ public class GameFrame extends JFrame {
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(BoardState.MAX+1, BoardState.MAX+1));
 
-        // Set board background image
-//        try{
-//            BufferedImage bgImage = ImageIO.read(new File("images/GrassBg.png"));
-//            boardPanel.add(new JLabel(new ImageIcon(bgImage)));
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
-
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++){
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++){
                 BoardCellPanel cellPanel = new BoardCellPanel(r,c);
@@ -130,26 +122,11 @@ public class GameFrame extends JFrame {
         // Set fox cells orange, rabbit cells grey and empty cells <<white>>
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
+                boardCellPanels.get(new Point(r,c)).setCharacter(gamestate.getTheBoard().getCell(r,c));
                 switch (gamestate.getTheBoard().getCell(r,c)) {
                     case FOX : boardCellPanels.get(new Point(r, c)).setBackground(new Color(202,105,31)); break;
                     case RABBIT :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(176,160,148)); break;
-                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(0,0,0,20)); break;
-                }
-                // Set icon for each cell
-                if (gamestate.getTheBoard().getCell(r,c) == Cell.FOX){
-                    try{
-                        BufferedImage foxImage = ImageIO.read(new File("images/FoxIcon.png"));
-                        boardCellPanels.get(new Point(r,c)).add(new JLabel(new ImageIcon(foxImage)));
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-                } else if (gamestate.getTheBoard().getCell(r,c) == Cell.RABBIT){
-                    try{
-                        BufferedImage foxImage = ImageIO.read(new File("images/RabbitIcon.png"));
-                        boardCellPanels.get(new Point(r,c)).add(new JLabel(new ImageIcon(foxImage)));
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
+                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(255,255,255,20)); break;
                 }
             }
         }
