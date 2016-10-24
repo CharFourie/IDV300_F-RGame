@@ -6,7 +6,7 @@ package game;
 public class Player {
 
     public Cell colour;
-    public Cell character; //image of fox or rabbiy
+    public Cell character; //image of fox or rabbit
 
 
     public Player(Cell colour){
@@ -19,16 +19,6 @@ public class Player {
 
     public void setCharacter(Cell character) {
         this.character = character;
-    }
-
-    public String getImageFileName(){
-        if (getColour() == Cell.FOX){
-            return "images/FoxIcon.png";
-        } else if (getColour() == Cell.RABBIT){
-            return "images/RabbitIcon.png";
-        } else {
-            return null;
-        }
     }
 
     public Cell getColour() {

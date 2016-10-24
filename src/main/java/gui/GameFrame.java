@@ -27,7 +27,6 @@ public class GameFrame extends JFrame {
     private GameState gamestate;
     private JLabel messageLabel;
     private Map<Point, BoardCellPanel> boardCellPanels;
-    private BufferedImage bgImage;
 
     public GameFrame(){
         super();
@@ -74,20 +73,22 @@ public class GameFrame extends JFrame {
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
 
-        // Background Panel
-        try{
-            bgImage = ImageIO.read(new File("images/GrassBg.png"));
-        } catch (IOException ioe){
-            System.out.println("Could not read in the pic");
-        }
-
         // Visual board setup
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(BoardState.MAX+1, BoardState.MAX+1));
+
+        // Set board background image
+//        try{
+//            BufferedImage bgImage = ImageIO.read(new File("images/GrassBg.png"));
+//            boardPanel.add(new JLabel(new ImageIcon(bgImage)));
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++){
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++){
                 BoardCellPanel cellPanel = new BoardCellPanel(r,c);
-                cellPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+                cellPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
                 // When board is clicked
                 cellPanel.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {}
@@ -110,7 +111,7 @@ public class GameFrame extends JFrame {
                 boardPanel.add(cellPanel);
             }
         }
-        boardPanel.setBackground(Color.GREEN);
+        boardPanel.setBackground(new Color(106,188,69));
 
         // Message Label
         messageLabel = new JLabel();
@@ -126,23 +127,25 @@ public class GameFrame extends JFrame {
     }
 
     public void refreshBoard(){
-
         // Set fox cells orange, rabbit cells grey and empty cells <<white>>
         for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
             for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
                 switch (gamestate.getTheBoard().getCell(r,c)) {
-                    case FOX : boardCellPanels.get(new Point(r, c)).setBackground(Color.ORANGE); break;
-                    case RABBIT :  boardCellPanels.get(new Point(r,c)).setBackground(Color.PINK); break;
-                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(0,0,0,64)); break;
+                    case FOX : boardCellPanels.get(new Point(r, c)).setBackground(new Color(202,105,31)); break;
+                    case RABBIT :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(176,160,148)); break;
+                    case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(0,0,0,20)); break;
                 }
-            }
-        }
-
-        for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
-            for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
+                // Set icon for each cell
                 if (gamestate.getTheBoard().getCell(r,c) == Cell.FOX){
                     try{
-                        BufferedImage foxImage = ImageIO.read(new File("FoxIcon.png"));
+                        BufferedImage foxImage = ImageIO.read(new File("images/FoxIcon.png"));
+                        boardCellPanels.get(new Point(r,c)).add(new JLabel(new ImageIcon(foxImage)));
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                } else if (gamestate.getTheBoard().getCell(r,c) == Cell.RABBIT){
+                    try{
+                        BufferedImage foxImage = ImageIO.read(new File("images/RabbitIcon.png"));
                         boardCellPanels.get(new Point(r,c)).add(new JLabel(new ImageIcon(foxImage)));
                     }catch (IOException e){
                         e.printStackTrace();
@@ -153,22 +156,22 @@ public class GameFrame extends JFrame {
 
         // show if selected
         if (gamestate.getSelectedPoint() != null && gamestate.getActivePlayer().getColour().equals(FOX)) {
-            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.YELLOW);
+            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(new Color(245,196,155));
         } else if (gamestate.getSelectedPoint() != null && gamestate.getActivePlayer().getColour().equals(RABBIT)){
-            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(Color.RED);
+            boardCellPanels.get(gamestate.getSelectedPoint()).setBackground(new Color(251,247,243));
         }
 
         // Update message label
         if (gamestate.gameIsOver()){
             if (gamestate.foxCellsInSameColumn()){
-                messageLabel.setForeground(Color.PINK);
+                messageLabel.setForeground(new Color(176,160,148));
                 messageLabel.setText("GAME OVER! RABBIT WINS!");
             } else if (gamestate.foxCellsInSameRow()){
-                messageLabel.setForeground(Color.PINK);
+                messageLabel.setForeground(new Color(176,160,148));
                 messageLabel.setText("GAME OVER! RABBIT WINS!");
             }
             else if (gamestate.foxHasNoLegalMoves()){
-                messageLabel.setForeground(Color.ORANGE);
+                messageLabel.setForeground(new Color(202,105,31));
                 messageLabel.setText("GAME OVER! FOX WINS!");
             }
             else {
@@ -177,10 +180,10 @@ public class GameFrame extends JFrame {
             }
         } else {
             if (gamestate.getActivePlayer().getColour().equals(Cell.FOX)) {
-                messageLabel.setForeground(Color.ORANGE);
+                messageLabel.setForeground(new Color(202,105,31));
                 messageLabel.setText("FOX'S TURN.");
             } else {
-                messageLabel.setForeground(Color.PINK);
+                messageLabel.setForeground(new Color(176,160,148));
                 messageLabel.setText("RABBIT'S TURN.");
             }
         }
