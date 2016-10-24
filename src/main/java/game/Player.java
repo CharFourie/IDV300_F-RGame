@@ -13,14 +13,6 @@ public class Player {
         this.colour = colour;
     }
 
-    public Cell getCharacter() {
-        return character;
-    }
-
-    public void setCharacter(Cell character) {
-        this.character = character;
-    }
-
     public Cell getColour() {
         return colour;
     }
