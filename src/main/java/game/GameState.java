@@ -119,7 +119,7 @@ public class GameState {
 
     public boolean isValidSelection(Point point) {
         //different rules
-        return !hasActiveSelection() && theBoard.getCell(point).equals(activePlayer.getColour());
+        return !hasActiveSelection() && theBoard.getCell(point).equals(activePlayer.getColour()) && !gameIsOver();
     }
 
     public boolean isFoxLegalMove(Point point) {
@@ -127,7 +127,7 @@ public class GameState {
         return hasActiveSelection() &&
                 (Point.getColumnDistance(selectedPoint, point) == 1 || Point.getRowDistance(selectedPoint, point) == 1)
                 && (selectedPoint.getColumn() == point.getColumn()|| selectedPoint.getRow() == point.getRow())
-                && theBoard.getCell(point).equals(Cell.RABBIT);
+                && theBoard.getCell(point).equals(Cell.RABBIT) && !gameIsOver();
     }
 
     public boolean isRabbitLegalMove(Point point) {
@@ -135,7 +135,7 @@ public class GameState {
         return hasActiveSelection() &&
                 (Point.getColumnDistance(selectedPoint, point) == 1 || Point.getRowDistance(selectedPoint, point) == 1)
                 && (selectedPoint.getColumn() == point.getColumn()|| selectedPoint.getRow() == point.getRow())
-                && theBoard.getCell(point).equals(Cell.EMPTY);
+                && theBoard.getCell(point).equals(Cell.EMPTY) && !gameIsOver();
     }
 
     public boolean gameIsOver() {

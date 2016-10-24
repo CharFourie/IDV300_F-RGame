@@ -25,6 +25,8 @@ public class AIGameState extends GameState {
             localPlayer = rabbitPlayer;
             aiPlayer = foxPlayer;
         }
+
+
     }
 
     public void setGameFrame(GameFrame gameFrame) {
@@ -48,26 +50,108 @@ public class AIGameState extends GameState {
         }
     }
 
-    public int calculateHeuristicForBoard(BoardState boardState, Player player){
-        // do we need two? one for fox and one for rabbit?
-        return boardState.countCells(player.getColour())
-                - boardState.countCells(otherPlayer(player).getColour());
+
+    public  void doFullAiMove(){
+        runMiniMax();
+        doAiSelect(minimaxSelect);
+        gameFrame.refreshBoard();
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            Thread.interrupted();
+        }
+        doAiMove(minimaxMove);
+        gameFrame.refreshBoard();
     }
 
-    public List<Point> getPossibleSelections(Player player) {
+    @Override
+    public void doMove(Point point) {
+        if (getActivePlayer().getColour().equals(localPlayer.getColour())) {
+            super.doMove(point);
+
+            if (getActivePlayer().getColour().equals(aiPlayer.getColour())) {
+                doFullAiMove();
+            }
+        }
+    }
+
+    public int calculateHeuristicForBoard(BoardState boardState){
+        // do we need two? one for fox and one for rabbit?
+        // Large heuristic good for rabbits
+        // Small is good for foxes
+        int heuristic = getFoxLegalMoves().size();
+
+        if(foxCellsInSameColumn() || foxCellsInSameRow()) {
+            heuristic = 1000;
+        }
+
+        return heuristic;
+
+    }
+
+    public List<Point> getPossibleSelections() {
         List<Point> possibleSelections = new LinkedList<Point>();
         // do we need two? one for fox and one for rabbit?
+        for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
+            for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
+                if(aiPlayer.getColour().equals(getTheBoard().getCell(r,c))) {
+                    possibleSelections.add(new Point(r,c));
+                }
+            }
+        }
         return possibleSelections;
     }
 
     public List<Point> getPossibleMovesForSelection(Point selection) {
         List<Point> possibleMoves = new LinkedList<Point>();
         // do we need two? one for fox and one for rabbit?
+        if (getTheBoard().getCell(selection) == Cell.FOX){
+            if (getTheBoard().getCell(selection.getRow(), selection.getColumn() -1).equals(Cell.RABBIT))
+            {
+                possibleMoves.add(new Point(selection.getRow(), selection.getColumn() -1));
+            }
+            if (getTheBoard().getCell(selection.getRow(), selection.getColumn() +1).equals(Cell.RABBIT))
+            {
+                possibleMoves.add(new Point(selection.getRow(), selection.getColumn() +1));
+            }
+            if (getTheBoard().getCell(selection.getRow() -1, selection.getColumn() ).equals(Cell.RABBIT))
+            {
+                possibleMoves.add(new Point(selection.getRow() -1, selection.getColumn() ));
+            }
+            if (getTheBoard().getCell(selection.getRow() + 1, selection.getColumn()).equals(Cell.RABBIT))
+            {
+                possibleMoves.add(new Point(selection.getRow() + 1, selection.getColumn()));
+            }
+        }
+        else if (getTheBoard().getCell(selection) == Cell.RABBIT)
+        {
+            if (getTheBoard().getCell(selection.getRow(), selection.getColumn() -1).equals(Cell.EMPTY))
+            {
+                possibleMoves.add(new Point(selection.getRow(), selection.getColumn() -1));
+            }
+            if (getTheBoard().getCell(selection.getRow(), selection.getColumn() +1).equals(Cell.EMPTY))
+            {
+                possibleMoves.add(new Point(selection.getRow(), selection.getColumn() +1));
+            }
+            if (getTheBoard().getCell(selection.getRow() -1, selection.getColumn() ).equals(Cell.EMPTY))
+            {
+                possibleMoves.add(new Point(selection.getRow() -1, selection.getColumn() ));
+            }
+            if (getTheBoard().getCell(selection.getRow() + 1, selection.getColumn()).equals(Cell.EMPTY))
+            {
+                possibleMoves.add(new Point(selection.getRow() + 1, selection.getColumn()));
+            }
+        }
         return possibleMoves;
     }
 
     public void doMoveOnCloneBoard(BoardState clonedBoard, Point selection, Point move) {
 
+        clonedBoard.setCell(move, aiPlayer.getColour());
+
+        if (Point.getColumnDistance(selection, move) == 1 || Point.getRowDistance(selection, move) == 1) {
+            clonedBoard.setCell(selection, Cell.EMPTY);
+        }
     }
 
     public Player otherPlayer(Player player) {
@@ -78,57 +162,57 @@ public class AIGameState extends GameState {
         }
     }
 
-    public MoveAndHeuristic runMiniMax(BoardState currentBoard, Player playerToMove, int depth) {
-        List<MoveAndHeuristic> heuristicList = new LinkedList<MoveAndHeuristic>();
+//    public MoveAndHeuristic runMiniMax(BoardState currentBoard, Player playerToMove, int depth) {
+//        List<MoveAndHeuristic> heuristicList = new LinkedList<MoveAndHeuristic>();
+//
+//        // Create a new board for each possible move
+//        for (Point selection : getPossibleSelections(playerToMove)) {
+//            for (Point move : getPossibleMovesForSelection(selection)) {
+//                BoardState clonedBoard = currentBoard.copy();
+//                doMoveOnCloneBoard(clonedBoard, selection, move);
+//                if (depth == 0) {
+//                    int cloneHeuristic = calculateHeuristicForBoard(clonedBoard, playerToMove);
+//                    heuristicList.add(new MoveAndHeuristic(selection, move, cloneHeuristic));
+//                } else {
+//                    int cloneHeuristic = runMiniMax(clonedBoard, otherPlayer(playerToMove), depth -1).getHeuristic();
+//                    heuristicList.add(new MoveAndHeuristic(selection, move, cloneHeuristic));
+//                }
+//            }
+//        }
+//
+//        //return here
+//        MoveAndHeuristic bestMove = null;
+//        for (MoveAndHeuristic cloneHeuristic : heuristicList) {
+//            if (bestMove == null || cloneHeuristic.getHeuristic() > bestMove.getHeuristic()) {
+//                bestMove = cloneHeuristic;
+//            }
+//        }
+//        return bestMove;
+//    }
 
-        // Create a new board for each possible move
-        for (Point selection : getPossibleSelections(playerToMove)) {
+    public void runMiniMax() {
+        int heuristic = Integer.MIN_VALUE;
+
+        // create a new board for each possible move
+        for (Point selection : getPossibleSelections()) {
             for (Point move : getPossibleMovesForSelection(selection)) {
-                BoardState clonedBoard = currentBoard.copy();
+                BoardState clonedBoard = getTheBoard().copy();
                 doMoveOnCloneBoard(clonedBoard, selection, move);
-                if (depth == 0) {
-                    int cloneHeuristic = calculateHeuristicForBoard(clonedBoard, playerToMove);
-                    heuristicList.add(new MoveAndHeuristic(selection, move, cloneHeuristic));
-                } else {
-                    int cloneHeuristic = runMiniMax(clonedBoard, otherPlayer(playerToMove), depth -1).getHeuristic();
-                    heuristicList.add(new MoveAndHeuristic(selection, move, cloneHeuristic));
-                }
-            }
-        }
-
-        //return here
-        MoveAndHeuristic bestMove = null;
-        for (MoveAndHeuristic cloneHeuristic : heuristicList) {
-            if (bestMove == null || cloneHeuristic.getHeuristic() > bestMove.getHeuristic()) {
-                bestMove = cloneHeuristic;
-            }
-        }
-        return bestMove;
-    }
-
-    @Override
-    public void doMove(Point point) {
-        // the player can only move something n the board if is their turn
-        if (isLocalPlayerTurn()){
-            super.doMove(point);
-            // move must have been a success, so now it is the ai turn
-            if (!isLocalPlayerTurn()) {
-                gameFrame.refreshBoard();
-                MoveAndHeuristic bestMove = runMiniMax(getTheBoard(), aiPlayer, 2);
-                if (bestMove != null) {
-                    this.minimaxSelect = bestMove.getSelection();
-                    this.minimaxMove = bestMove.getMove();
-                    doAiSelect(minimaxSelect);
-                    try{
-                        Thread.sleep(1000L);
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                    }
-                    doAiMove(minimaxMove);
+                int cloneHeuristic = calculateHeuristicForBoard(clonedBoard);
+                if (cloneHeuristic > heuristic && aiPlayer == rabbitPlayer) {
+                    minimaxSelect = selection;
+                    minimaxMove = move;
+                    heuristic = cloneHeuristic;
+                } else if (cloneHeuristic < heuristic && aiPlayer == foxPlayer) {
+                    minimaxSelect = selection;
+                    minimaxMove = move;
+                    heuristic = cloneHeuristic;
                 }
             }
         }
     }
+
+
 
     public boolean isLocalPlayerTurn() {
         return localPlayer.equals(getActivePlayer());
