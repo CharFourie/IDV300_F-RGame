@@ -3,12 +3,16 @@ package gui;
 import game.*;
 import game.Point;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +27,7 @@ public class GameFrame extends JFrame {
     private GameState gamestate;
     private JLabel messageLabel;
     private Map<Point, BoardCellPanel> boardCellPanels;
+    private BufferedImage bgImage;
 
     public GameFrame(){
         super();
@@ -68,6 +73,13 @@ public class GameFrame extends JFrame {
 
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
+
+        // Background Panel
+        try{
+            bgImage = ImageIO.read(new File("images/GrassBg.png"));
+        } catch (IOException ioe){
+            System.out.println("Could not read in the pic");
+        }
 
         // Visual board setup
         JPanel boardPanel = new JPanel();
@@ -122,6 +134,19 @@ public class GameFrame extends JFrame {
                     case FOX : boardCellPanels.get(new Point(r, c)).setBackground(Color.ORANGE); break;
                     case RABBIT :  boardCellPanels.get(new Point(r,c)).setBackground(Color.PINK); break;
                     case EMPTY :  boardCellPanels.get(new Point(r,c)).setBackground(new Color(0,0,0,64)); break;
+                }
+            }
+        }
+
+        for (int r = BoardState.MIN; r <= BoardState.MAX; r++) {
+            for (int c = BoardState.MIN; c <= BoardState.MAX; c++) {
+                if (gamestate.getTheBoard().getCell(r,c) == Cell.FOX){
+                    try{
+                        BufferedImage foxImage = ImageIO.read(new File("FoxIcon.png"));
+                        boardCellPanels.get(new Point(r,c)).add(new JLabel(new ImageIcon(foxImage)));
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
                 }
             }
         }
