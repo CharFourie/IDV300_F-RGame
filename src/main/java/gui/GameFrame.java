@@ -3,16 +3,12 @@ package gui;
 import game.*;
 import game.Point;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +21,7 @@ import static game.Cell.RABBIT;
 public class GameFrame extends JFrame {
 
     private GameState gamestate;
+    private JButton menuButton;
     private JLabel messageLabel;
     private Map<Point, BoardCellPanel> boardCellPanels;
 
@@ -36,42 +33,17 @@ public class GameFrame extends JFrame {
 
     public void initGui(){
 
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("New Game...");
-
-        JMenuItem twoPlayerItem = new JMenuItem("New Two-Player Game");
-        twoPlayerItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                gamestate = new GameState(GameStyle.TWO_PLAYER);
-                refreshBoard();
-            }
-        });
-
-        JMenuItem networkedItem = new JMenuItem("New Networked Game");
-        networkedItem.addActionListener(new ActionListener() {
+        JButton menuButton = new JButton("BACK TO MAIN MENU");
+        menuButton.setBackground(new Color(20, 144, 51));
+        menuButton.setForeground(new Color(255, 255, 255));
+        menuButton.setBorder(BorderFactory.createLineBorder(Color.WHITE,1));
+        menuButton.setOpaque(true);
+        menuButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GameFrame.this.dispose();
-                new NetworkedSetupFrame();
+                new MenuFrame();
             }
         });
-
-        JMenuItem aiItem = new JMenuItem("New AI Game");
-        aiItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // localplayer gets to start
-                AIGameState aiGameState = new AIGameState(GameStyle.AI, Cell.FOX);
-                aiGameState.setGameFrame(GameFrame.this);
-                gamestate = aiGameState;
-                refreshBoard();
-            }
-        });
-
-        menu.add(twoPlayerItem);
-        menu.add(networkedItem);
-        menu.add(aiItem);
-
-        menuBar.add(menu);
-        this.setJMenuBar(menuBar);
 
         // Visual board setup
         JPanel boardPanel = new JPanel();
@@ -107,9 +79,11 @@ public class GameFrame extends JFrame {
 
         // Message Label
         messageLabel = new JLabel();
+        messageLabel.setFont(messageLabel.getFont().deriveFont(18.0f));
 
         // Frame Layout
         this.setLayout(new BorderLayout());
+        this.add(menuButton, BorderLayout.NORTH);
         this.add(boardPanel, BorderLayout.CENTER);
         this.add(messageLabel, BorderLayout.SOUTH);
 
