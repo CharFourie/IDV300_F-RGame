@@ -54,7 +54,7 @@ public class MenuFrame extends JFrame {
         gameText.setForeground(Color.WHITE);
         gameText.setHorizontalAlignment(JLabel.CENTER);
         gameText.setVerticalAlignment(JLabel.CENTER);
-        //gameText.setFont(gameText.getFont().deriveFont(16.0f));
+//        gameText.setFont(gameText.getFont().deriveFont(16.0f));
 
         twoPlayerButton = new JButton("TWO-PLAYER GAME");
         twoPlayerButton.setFont(twoPlayerButton.getFont().deriveFont(20.0f));
@@ -117,7 +117,7 @@ public class MenuFrame extends JFrame {
         backgroundPanel.add(backgroundImagePanel);
 
         controlsPanel.setLayout(new GridLayout(5,1));
-        controlsPanel.setBackground(new Color(0,0,0,0));
+        controlsPanel.setBackground(new Color(255,255,255,0));
         controlsPanel.add(gameLabel);
         controlsPanel.add(gameText);
         controlsPanel.add(buttonPanel);
