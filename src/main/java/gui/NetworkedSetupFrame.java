@@ -18,11 +18,13 @@ public class NetworkedSetupFrame extends JFrame {
 
     public static final int PORTNUM = 9933;
 
+    private BackgroundPanel backgroundImagePanel;
     private JComboBox<String> comboBox;
     private JLabel outputLabel;
     private JLabel hostLabel;
     private JTextField hostName;
     private JButton startButton;
+    private JButton menuButton;
 
     public NetworkedSetupFrame() {
         super();
@@ -31,13 +33,12 @@ public class NetworkedSetupFrame extends JFrame {
 
     private void initGui() {
 
-        this.setLayout(new GridLayout(5,1));
-
         comboBox = new JComboBox<String>();
         comboBox.addItem("Host");
         comboBox.addItem("Join");
 
         hostLabel = new JLabel("Host IP Address");
+        hostLabel.setForeground(Color.WHITE);
         hostName = new JTextField();
 
         hostLabel.setVisible(false);
@@ -57,7 +58,11 @@ public class NetworkedSetupFrame extends JFrame {
 
         outputLabel = new JLabel("");
 
-        startButton = new JButton("Start");
+        startButton = new JButton("START");
+        startButton.setBackground(new Color(20, 144, 51));
+        startButton.setForeground(new Color(255, 255, 255));
+        startButton.setBorder(BorderFactory.createLineBorder(Color.WHITE,1));
+        startButton.setOpaque(true);
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 NetworkedGameState gameState = null;
@@ -85,11 +90,46 @@ public class NetworkedSetupFrame extends JFrame {
             }
         });
 
-        this.add(comboBox);
-        this.add(hostLabel);
-        this.add(hostName);
-        this.add(startButton);
-        this.add(outputLabel);
+        menuButton = new JButton("CANCEL");
+        menuButton.setBackground(new Color(20, 144, 51));
+        menuButton.setForeground(new Color(255, 255, 255));
+        menuButton.setBorder(BorderFactory.createLineBorder(Color.WHITE,1));
+        menuButton.setOpaque(true);
+        menuButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                NetworkedSetupFrame.this.dispose();
+                new MenuFrame();
+            }
+        });
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(4,1));
+        infoPanel.setBackground(new Color(0,0,0,0));
+        infoPanel.add(comboBox);
+        infoPanel.add(hostLabel);
+        infoPanel.add(hostName);
+        infoPanel.add(outputLabel);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3,1));
+        buttonPanel.setBackground(new Color(0,0,0,0));
+        buttonPanel.add(startButton);
+        buttonPanel.add(menuButton);
+
+        JPanel backgroundPanel = new JPanel();
+        backgroundImagePanel = new BackgroundPanel();
+        JPanel controlsPanel = new JPanel();
+        backgroundPanel.setLayout(new OverlayLayout(backgroundPanel));
+
+        backgroundPanel.add(controlsPanel);
+        backgroundPanel.add(backgroundImagePanel);
+
+        controlsPanel.setLayout(new GridLayout(5,1));
+        controlsPanel.setBackground(new Color(0,0,0,0));
+        controlsPanel.add(infoPanel);
+        controlsPanel.add(buttonPanel);
+
+        this.add(backgroundPanel);
 
         this.setSize(new Dimension(700,800));
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
