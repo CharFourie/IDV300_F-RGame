@@ -1,6 +1,7 @@
 package game;
 
 import com.sun.media.jfxmedia.events.PlayerTimeListener;
+import sun.jvm.hotspot.debugger.cdbg.PointerType;
 import gui.GameFrame;
 
 import java.util.LinkedList;
@@ -40,7 +41,7 @@ public class AIGameState extends GameState {
 
     public void doAiMove(Point point) {
         super.doMove(point);
-        gameFrame.refreshBoard();
+        //gameFrame.refreshBoard();
     }
 
     @Override
@@ -71,23 +72,48 @@ public class AIGameState extends GameState {
             super.doMove(point);
 
             if (getActivePlayer().getColour().equals(aiPlayer.getColour())) {
-                MoveAndHeuristic bestMove = runMiniMax(getTheBoard(), aiPlayer, 0);
+                MoveAndHeuristic bestMove = runMiniMax(getTheBoard(), aiPlayer, 4);
                 if (bestMove != null){
                     this.minimaxSelect = bestMove.getSelection();
                     this.minimaxMove = bestMove.getMove();
                     doAiSelect(minimaxSelect);
-                    gameFrame.refreshBoard();
+                    //gameFrame.refreshBoard();
                     try {
                         Thread.sleep(1000L);
                     } catch (InterruptedException e) {
                         Thread.interrupted();
                     }
                     doAiMove(minimaxMove);
-                    gameFrame.refreshBoard();
+                   // gameFrame.refreshBoard();
                 }
             }
         }
     }
+
+//    @Override
+//    public void doMove(Point point){
+//        // the player can only move something on the board if it is their turn
+//        if(isLocalPlayerTurn()){
+//            super.doMove(point);
+//            // move must have been a success, so now its the AI's turn
+//            if(!isLocalPlayerTurn()){
+//                gameFrame.refreshBoard();
+//                MoveAndHeuristic bestMove = runMiniMax(getTheBoard(), aiPlayer, 2);
+//                if (bestMove != null) {
+//                    this.minimaxSelect = bestMove.getSelection();
+//                    this.minimaxMove = bestMove.getMove();
+//                    doAiSelect(minimaxSelect);
+//                    try {
+//                        Thread.sleep(1000L);
+//                    } catch (InterruptedException e) {
+//                        Thread.interrupted();
+//                    }
+//                    doAiMove(minimaxMove);
+//                    gameFrame.refreshBoard();
+//                }
+//            }
+//        }
+//    }
 
     public int calculateHeuristicForBoard(BoardState boardState, Player player){
         // Large heuristic good for rabbits
@@ -173,7 +199,7 @@ public class AIGameState extends GameState {
             for (Point move : getPossibleMovesForSelection(selection)) {
                 BoardState clonedBoard = currentBoard.copy();
                 doMoveOnCloneBoard(clonedBoard, selection, move);
-                if (depth == 2){
+                if (depth == 4){
                     int cloneHeuristic = calculateHeuristicForBoard(clonedBoard, playerToMove);
                     heuristicList.add(new MoveAndHeuristic(selection, move, cloneHeuristic));
                 } else {

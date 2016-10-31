@@ -54,6 +54,7 @@ public class MenuFrame extends JFrame {
         gameText.setForeground(Color.WHITE);
         gameText.setHorizontalAlignment(JLabel.CENTER);
         gameText.setVerticalAlignment(JLabel.CENTER);
+        //gameText.setFont(gameText.getFont().deriveFont(16.0f));
 
         twoPlayerButton = new JButton("TWO-PLAYER GAME");
         twoPlayerButton.setFont(twoPlayerButton.getFont().deriveFont(20.0f));
